@@ -52,13 +52,14 @@ void processCommand(Game game, int command) {
 void printStatus(Game game) {
 }
 void printNext(Game game) {
+
 }
 void printBoard(Game game) {
 }
 void nextPlay(Game game) {
-    int dice = game.rollDice();
+    int dice = game.getDice();
     int player = game.getNextPlayer();
     cout << "Player "<< player << " rolled " << dice;
 
-    
+
 }
