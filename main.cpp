@@ -1,5 +1,8 @@
+
+
 #include <iostream>
 #include "game.cpp"
+#include <limits>
 
 using namespace std;
 
@@ -11,16 +14,18 @@ void printNext(Game game);
 void printBoard(Game game);
 void nextPlay(Game game);
 
+int* num_players;
+
 int main (int argc, char *argv[]) {
 
-    int num_players = -1;
-    while ((std::cout << "How many players? ") && !(std::cin >> num_players)) {
+    num_players = new int;
+    while ((std::cout << "How many players? ") && !(std::cin >> *num_players)) {
         cout << " !!! INVALID INPUT !!!\nPlease Insert Valid Number of Players: ";
         cin.clear();
         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }   
 
-    Game game = Game(num_players);
+    Game game = Game(*num_players);
     
     int command = 0;   
     cout << HELP;
@@ -44,22 +49,29 @@ void processCommand(Game game, int command) {
         case 1: printStatus(game);break;
         case 2: printNext(game);break;
         case 3: printBoard(game);break;
-        case 4: cout << HELP;break;
+        case 4: cout << HELP << endl;break;
         default: nextPlay(game);break;
     }
 }
 
 void printStatus(Game game) {
+    for (int i = 0; i < *num_players; i++) {
+        Player player = game.getPlayer(i);
+        cout << "Player " << i << " has " << player.getFreeze() << " fines and is at position " << player.getPosition() << endl;
+    }
 }
-void printNext(Game game) {
 
+void printNext(Game game) {
+    cout << "Next Player is at position " << game.getNextPlayer().getPosition() << endl;
 }
+
 void printBoard(Game game) {
+    cout << "Board Status not implemented yet." << endl;
 }
+
 void nextPlay(Game game) {
     int dice = game.getDice();
-    int player = game.getNextPlayer();
-    cout << "Player "<< player << " rolled " << dice;
-
+    Player player = game.getNextPlayer();
+    cout << " Next Player Rolled " << dice << endl;
 
 }
