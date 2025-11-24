@@ -1,12 +1,26 @@
+
+
+#include <string>
+
+using namespace std;
 class Player {
     private:
+        string name;
         int position;
         int freezeTime;
 
     public:
-        Player() {
-            position = 0;
-            freezeTime   = 0;
+        // Default constructor for array initialization
+        Player() {}
+
+        Player(string name) {
+            this->name = name;
+            this->position = 1;
+            this->freezeTime   = 0;
+        }
+
+        string getName() {
+            return name;
         }
 
         void move(int dice) {

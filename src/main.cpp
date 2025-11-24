@@ -1,12 +1,13 @@
 
 
 #include <iostream>
-#include "game.cpp"
 #include <limits>
+#include "game.cpp"
+
 
 using namespace std;
 
-const string HELP = "-1 - Exit\n0 / Enter - Continue Game\n1 - Print Status\n2 - Print Next Player\n3 - Print Board\n4 - Print this Menu\n";
+const string HELP = "-1 - Exit\n0 - Continue Game\n1 - Print Status\n2 - Print Next Player\n3 - Print Board\n4 - Print this Menu\n";
 
 void processCommand(Game game, int command);
 void printStatus(Game game);
@@ -25,15 +26,24 @@ int main (int argc, char *argv[]) {
         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }   
 
-    Game game = Game(*num_players);
+    if (*num_players > 6) {
+        cout << "Let's keep it small. Number of players set to 6"<< endl;
+        num_players = new int(6);
+    }
+
+    string player_names[*num_players];
+    for (int player = 0; player < *num_players; player++) {
+        cout << "Enter name for Player " << player + 1 << ": ";
+        cin >> player_names[player];
+    }
+
+    Game game = Game(*num_players, player_names);
     
     int command = 0;   
     cout << HELP;
     do {
         cout << "Enter command: ";
-        if (cin.get() == '\n') {
-            nextPlay(game);
-        }
+        
         cin >> command; 
         processCommand(game, command);
         
@@ -50,28 +60,28 @@ void processCommand(Game game, int command) {
         case 2: printNext(game);break;
         case 3: printBoard(game);break;
         case 4: cout << HELP << endl;break;
-        default: nextPlay(game);break;
     }
 }
 
 void printStatus(Game game) {
     for (int i = 0; i < *num_players; i++) {
         Player player = game.getPlayer(i);
-        cout << "Player " << i << " has " << player.getFreeze() << " fines and is at position " << player.getPosition() << endl;
+        cout << "Player "<< "#" << i+1 << ", " << player.getName() << ", has " << player.getFreeze() << " fines and is at position " << player.getPosition() << endl;
     }
 }
 
 void printNext(Game game) {
-    cout << "Next Player is at position " << game.getNextPlayer().getPosition() << endl;
+    cout << "Next player is player"<< game.getNextPlayer().getName() << endl;
 }
 
 void printBoard(Game game) {
-    cout << "Board Status not implemented yet." << endl;
+    cout << "Board viewing not implemented yet." << endl;
 }
 
 void nextPlay(Game game) {
-    int dice = game.getDice();
     Player player = game.getNextPlayer();
-    cout << " Next Player Rolled " << dice << endl;
 
+    game.playRound();
+    int dice = game.getDice();
+    cout << " Player " << player.getName() << " rolled " << dice << endl;
 }

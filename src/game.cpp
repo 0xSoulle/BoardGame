@@ -3,7 +3,7 @@
 #include "player.cpp"
 #include <cstdlib>
 
-using namespace std; 
+using namespace std;
 
 class Game {
     private:
@@ -13,7 +13,7 @@ class Game {
         int freeze[5];
         int jumps[5];
 
-        Player* players;
+        Player *players;
         int num_players;
         int nextPlayer = 0;
 
@@ -45,9 +45,7 @@ class Game {
                 else {
                     death = i + rand()%10;
                 }
-                
             }
-
         }
 
         int rollDice() {
@@ -55,35 +53,18 @@ class Game {
         }
 
         void setNextPlayer() {
-            int next = -1;
-            int index = nextPlayer;
-            while (next == -1) {
-                // fines > 0 -> reduce fines
-                // fines == 0 -> can play
-                Player player = players[index];
-                if (player.getFreeze() == -1) {
-                    // skip dead players
-                    index ++;
-                    if (index == num_players) {
-                        index = 0;
-                    }
-                    player = players[index];
-                }
-
-                if (player.getFreeze() > 0) {
-                    player.reduceFreeze();
-                }
-                else if (player.getFreeze() == 0) {
-                    next = index;
-                    break;
-                }
-                index ++;
-                if (index == num_players) {
-                    index = 0;
+            nextPlayer ++;
+            if (nextPlayer == num_players) {
+                nextPlayer = 0;
+            }
+            
+            while(players[nextPlayer].getFreeze() != 0) {
+                players[nextPlayer].reduceFreeze();
+                nextPlayer ++;
+                if (nextPlayer == num_players) {
+                    nextPlayer = 0;
                 }
             }
-           
-            nextPlayer = next;
         }
 
         void checkPositionEffects(int player, int position) {
@@ -148,14 +129,20 @@ class Game {
         }
     
     public:
-        // Constructor -> set player status at 0 fines and position 1
-        Game(int num_players) {
+        /* 
+        * Constructor -> set player status at 0 fines and position 1
+        * initialize random seed
+        * draw board action tiles
+        */
+        Game(int num_players, string player_names[]) {
             this->num_players = num_players;
             players = new Player[num_players];
             for (int player = 0; player < num_players; player++) {
-                players[player] = Player();
+                players[player] = Player(player_names[player]);
             }
             
+            srand(time(0));
+
             drawBoard();
         }
 
@@ -175,6 +162,7 @@ class Game {
             int player_position = players[nextPlayer].getPosition() + rolled_dice;
             
             checkPositionEffects(nextPlayer, player_position);
+
             setNextPlayer();
         }
 };
