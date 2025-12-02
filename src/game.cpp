@@ -2,6 +2,7 @@
 
 #include "player.cpp"
 #include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
@@ -30,8 +31,8 @@ class Game {
         void drawBoard() {
             for(int i = 0; i < 90; i += 10) {
                 if (i < 50) {
-                    freeze[i/10] = i + rand()%10 + 1;
-                    jumps[i/10] = i + rand()%10 + 1;
+                    freeze[i/10] = i + rand()%9 + 1;
+                    jumps[i/10] = i + rand()%9 + 1;
                 }
                 else if (i < 60) {
                     fall = i + rand()%10;
@@ -67,35 +68,36 @@ class Game {
             }
         }
 
-        void checkPositionEffects(int player, int position) {
+        int checkPositionEffects(int player, int position) {
             if (position < 50) {
                 for (int i = 0; i < 5; i++) {
                     if (position == freeze[i]) {
                         freezePlayer(player);
-                        return;
+                        return 0;
                     }
                     else if (position == jumps[i]) {
                         applyJump(player);
-                        return;
+                        return 1;
                     }
                 }
             }
             else if (position == fall) {
                 applyFall(player);
-                return;
+                return 2;
             }
             else if (position == crab) {
                 applyCrab(player, rolled_dice);
-                return;
+                return 3;
             }
             else if (position == hell) {
                 applyHell(player);
-                return;
+                return 4;
             }
             else if (position == death) {
                 applyDeath(player);
-                return;
+                return 5;
             }
+            return -1;
         }
 
         // moves player position 9 tiles ahead
@@ -157,12 +159,15 @@ class Game {
         Player getPlayer(int index) {
             return players[index];
         }
-        void playRound() {
+
+        int playRound() {
             rolled_dice = rollDice();
             int player_position = players[nextPlayer].getPosition() + rolled_dice;
             
-            checkPositionEffects(nextPlayer, player_position);
+            int event = checkPositionEffects(nextPlayer, player_position);
 
             setNextPlayer();
+
+            return event;
         }
 };
