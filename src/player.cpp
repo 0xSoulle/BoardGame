@@ -1,52 +1,49 @@
+#include "player.h"
 
+Player::Player() {
+    this->name = "";
+    this->position = 1;
+    this->freezeTime = 0;
+}
 
-#include <string>
+Player::Player(std::string name) {
+    this->name = name;
+    this->position = 1;
+    this->freezeTime = 0;
+}
 
-using namespace std;
-class Player {
-    private:
-        string name;
-        int position;
-        int freezeTime;
+std::string Player::getName() {
+    return name;
+}
 
-    public:
-        // Default constructor for array initialization
-        Player() {}
+void Player::move(int dice) {
+    position += dice;
+    if (position < 1) position = 1;
+    if (position > 90) position = 90;
+}
 
-        Player(string name) {
-            this->name = name;
-            this->position = 1;
-            this->freezeTime   = 0;
-        }
+int Player::getPosition() {
+    return position;
+}
 
-        string getName() {
-            return name;
-        }
+int Player::getFreeze() {
+    return freezeTime;
+}
 
-        void move(int dice) {
-            position += dice;
-        }
+void Player::freeze() {
+    freezeTime = 1;
+}
 
-        int getPosition() {
-            return position;
-        }
+void Player::reduceFreeze() {
+    if (freezeTime > 0) {
+        freezeTime--;
+    }
+}
 
-        int getFreeze() {
-            return freezeTime;
-        }
+void Player::kill() {
+    freezeTime = -1;
+}
 
-        void freeze() {
-            freezeTime = 1;
-        }
-
-        void reduceFreeze() {
-            if (freezeTime > 0) {
-                freezeTime--;
-            }
-        }
-        
-        void kill() {
-            freezeTime = -1;
-        }
-
-};
+bool Player::isAlive() {
+    return freezeTime != -1;
+}
